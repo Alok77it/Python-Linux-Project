@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Python Lessons - PythonMaster{% endblock %}
+
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-python.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.js"></script>
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Python Lessons</h1>
+        <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-600">Your XP:</span>
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-medium">{{ current_user.xp_points }} XP</span>
+        </div>
+    </div>
+
+    <!-- Course Navigation -->
+    <div class="mb-8">
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <h2 class="text-xl font-semibold mb-4">Course Sections</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <a href="{{ url_for('python_lessons', section='basics') }}" 
+                   class="p-4 border rounded-lg hover:bg-gray-50 transition-colors {% if current_section == 'basics' %}bg-indigo-50 border-indigo-200{% endif %}">
+                    <h3 class="font-medium">Python Basics</h3>
+                    <p class="text-sm text-gray-600">Variables, Data Types, and Operations</p>
+                </a>
+                <a href="{{ url_for('python_lessons', section='strings') }}" 
+                   class="p-4 border rounded-lg hover:bg-gray-50 transition-colors {% if current_section == 'strings' %}bg-indigo-50 border-indigo-200{% endif %}">
+                    <h3 class="font-medium">String Operations</h3>
+                    <p class="text-sm text-gray-600">String manipulation and methods</p>
+                </a>
+                <a href="{{ url_for('python_lessons', section='numbers') }}" 
+                   class="p-4 border rounded-lg hover:bg-gray-50 transition-colors {% if current_section == 'numbers' %}bg-indigo-50 border-indigo-200{% endif %}">
+                    <h3 class="font-medium">Numbers & Math</h3>
+                    <p class="text-sm text-gray-600">Mathematical operations and number handling</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="space-y-8">
+        {% for lesson in lessons %}
+        <div class="bg-white rounded-xl shadow-md overflow-hidden" id="lesson-{{ lesson.id }}">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                        {% if lesson.difficulty == 'Beginner' %}
+                            bg-green-100 text-green-800
+                        {% elif lesson.difficulty == 'Intermediate' %}
+                            bg-yellow-100 text-yellow-800
+                        {% else %}
+                            bg-red-100 text-red-800
+                        {% endif %}">
+                        {{ lesson.difficulty }}
+                    </span>
+                    <span class="text-sm text-gray-500">+{{ lesson.xp_reward }} XP</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ lesson.title }}</h3>
+                
+                <!-- Lesson Content -->
+                <div class="prose max-w-none mb-6">
+                    {{ lesson.content|markdown }}
+                </div>
+
+                <!-- Code Editor Section -->
+                <div class="mb-6">
+                    <h4 class="text-lg font-medium mb-2">Practice Area</h4>
+                    <div class="relative">
+                        <div id="editor-{{ lesson.id }}" class="h-64 w-full rounded-lg border" style="font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace"></div>
+                    </div>
+                    <div class="mt-4 flex space-x-4">
+                        <button onclick="runCode('{{ lesson.id }}')" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                            Run Code
+                        </button>
+                        <button onclick="resetCode('{{ lesson.id }}')" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
+                            Reset
+                        </button>
+                    </div>
+                    <div id="output-{{ lesson.id }}" class="mt-4 p-4 bg-gray-100 rounded-lg font-mono text-sm hidden"></div>
+                </div>
+
+                <!-- Complete Lesson Button -->
+                <button onclick="completeLesson('{{ lesson.id }}')" class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+                    Complete Lesson
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Initialize editors
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for lesson in lessons %}
+            const editor{{ lesson.id }} = ace.edit('editor-{{ lesson.id }}');
+            editor{{ lesson.id }}.setTheme('ace/theme/monokai');
+            editor{{ lesson.id }}.session.setMode('ace/mode/python');
+            editor{{ lesson.id }}.setFontSize(14);
+            {% endfor %}
+        });
+
+        function runCode(lessonId) {
+            const editor = ace.edit('editor-' + lessonId);
+            const code = editor.getValue();
+            const outputDiv = document.getElementById('output-' + lessonId);
+            
+            // Send code to backend for execution
+            fetch('/execute-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code: code })
+            })
+            .then(response => response.json())
+            .then(data => {
+                outputDiv.classList.remove('hidden');
+                if (data.error) {
+                    outputDiv.innerHTML = '<span class="text-red-600">Error: ' + data.error + '</span>';
+                } else {
+                    outputDiv.innerHTML = '<pre class="whitespace-pre-wrap">' + data.output + '</pre>';
+                }
+            })
+            .catch(error => {
+                outputDiv.classList.remove('hidden');
+                outputDiv.innerHTML = '<span class="text-red-600">Error: ' + error.message + '</span>';
+            });
+        }
+
+        function resetCode(lessonId) {
+            const editor = ace.edit('editor-' + lessonId);
+            editor.setValue('');
+            const outputDiv = document.getElementById('output-' + lessonId);
+            outputDiv.classList.add('hidden');
+        }
+
+        function completeLesson(lessonId) {
+            // Here you would typically send a request to mark the lesson as complete
+            alert('Lesson completed! XP awarded.');
+        }
+    </script>
+
+    <!-- Learning Path -->
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Your Learning Path</h2>
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-between">
+                <div class="bg-white px-4">
+                    <div class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center">
+                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <span class="block text-sm font-medium text-gray-500 mt-2">Basics</span>
+                </div>
+                <div class="bg-white px-4">
+                    <div class="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center">
+                        <span class="text-white font-medium">2</span>
+                    </div>
+                    <span class="block text-sm font-medium text-gray-500 mt-2">Functions</span>
+                </div>
+                <div class="bg-white px-4">
+                    <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span class="text-white font-medium">3</span>
+                    </div>
+                    <span class="block text-sm font-medium text-gray-500 mt-2">OOP</span>
+                </div>
+                <div class="bg-white px-4">
+                    <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span class="text-white font-medium">4</span>
+                    </div>
+                    <span class="block text-sm font-medium text-gray-500 mt-2">Advanced</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

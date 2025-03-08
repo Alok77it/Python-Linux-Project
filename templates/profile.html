@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - PythonMaster{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- User Info Card -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+        <div class="bg-indigo-600 px-6 py-4">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="h-16 w-16 rounded-full bg-indigo-300 flex items-center justify-center text-2xl font-bold text-white">
+                        {{ current_user.username[0].upper() }}
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <h2 class="text-2xl font-bold text-white">{{ current_user.username }}</h2>
+                    <p class="text-indigo-200">Level {{ current_user.level }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="px-6 py-4">
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                    <p class="text-gray-500 text-sm">XP Points</p>
+                    <p class="text-2xl font-bold text-indigo-600">{{ current_user.xp_points }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Badges Earned</p>
+                    <p class="text-2xl font-bold text-indigo-600">{{ current_user.badges|length }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Next Level</p>
+                    <p class="text-2xl font-bold text-indigo-600">{{ current_user.level + 1 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Section -->
+    <div class="grid md:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-semibold mb-4">Python Progress</h3>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Basic Concepts</span>
+                        <span class="text-sm font-medium text-gray-700">80%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 80%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Functions & OOP</span>
+                        <span class="text-sm font-medium text-gray-700">60%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 60%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Advanced Topics</span>
+                        <span class="text-sm font-medium text-gray-700">30%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 30%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-semibold mb-4">Linux Progress</h3>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Basic Commands</span>
+                        <span class="text-sm font-medium text-gray-700">70%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 70%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">File Management</span>
+                        <span class="text-sm font-medium text-gray-700">50%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 50%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">System Admin</span>
+                        <span class="text-sm font-medium text-gray-700">20%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 20%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badges Section -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-xl font-semibold mb-6">Earned Badges</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {% for badge in current_user.badges %}
+            <div class="text-center">
+                <div class="h-20 w-20 mx-auto bg-indigo-100 rounded-full flex items-center justify-center mb-2">
+                    <img src="{{ badge.image_url }}" alt="{{ badge.name }}" class="h-12 w-12">
+                </div>
+                <p class="font-medium text-gray-900">{{ badge.name }}</p>
+                <p class="text-sm text-gray-500">{{ badge.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Linux Commands - PythonMaster{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Linux Commands</h1>
+        <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-600">Your XP:</span>
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-medium">{{ current_user.xp_points }} XP</span>
+        </div>
+    </div>
+
+    <!-- Command Categories -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for lesson in lessons %}
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                        {% if lesson.difficulty == 'Basic' %}
+                            bg-green-100 text-green-800
+                        {% elif lesson.difficulty == 'Intermediate' %}
+                            bg-yellow-100 text-yellow-800
+                        {% else %}
+                            bg-red-100 text-red-800
+                        {% endif %}">
+                        {{ lesson.difficulty }}
+                    </span>
+                    <span class="text-sm text-gray-500">+{{ lesson.xp_reward }} XP</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ lesson.title }}</h3>
+                <p class="text-gray-600 mb-4">{{ lesson.content[:100] }}...</p>
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <code class="text-sm font-mono text-gray-800">{{ lesson.example_command }}</code>
+                </div>
+                <a href="#" class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 w-full">
+                    Practice Command
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Command Reference -->
+    <div class="mt-12 bg-white rounded-xl shadow-md p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Quick Reference</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-lg font-semibold mb-4">File Management</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">ls</code>
+                        <span class="ml-3 text-sm text-gray-600">List directory contents</span>
+                    </div>
+                    <div class="flex items-center">
+                        <code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">cd</code>
+                        <span class="ml-3 text-sm text-gray-600">Change directory</span>
+                    </div>
+                    <div class="flex items-center">
+                        <code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">mkdir</code>
+                        <span class="ml-3 text-sm text-gray-600">Create directory</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">System Information</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">top</code>
+                        <span class="ml-3 text-sm text-gray-600">Display processes</span>
+                    </div>
+                    <div class="flex items-center">
+                        <code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">df</code>
+                        <span class="ml-3 text-sm text-gray-600">Show disk space</span>
+                    </div>
+                    <div class="flex items-center">
+                        <code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">ps</code>
+                        <span class="ml-3 text-sm text-gray-600">Show processes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Tracker -->
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Command Mastery Progress</h2>
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-between">
+                <div class="bg-white px-4">
+                    <div class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center">
+                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <span class="block text-sm font-medium text-gray-500 mt-2">Navigation</span>
+                </div>
+                <div class="bg-white px-4">
+                    <div class="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center">
+                        <span class="text-white font-medium">2</span>
+                    </div>
+                    <span class="block text-sm font-medium text-gray-500 mt-2">File Ops</span>
+                </div>
+                <div class="bg-white px-4">
+                    <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span class="text-white font-medium">3</span>
+                    </div>
+                    <span class="block text-sm font-medium text-gray-500 mt-2">Permissions</span>
+                </div>
+                <div class="bg-white px-4">
+                    <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span class="text-white font-medium">4</span>
+                    </div>
+                    <span class="block text-sm font-medium text-gray-500 mt-2">Advanced</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

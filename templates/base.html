@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PythonMaster{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans">
+    <nav class="bg-indigo-600 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <a href="{{ url_for('index') }}" class="text-2xl font-bold">PythonMaster</a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('python_lessons') }}" class="hover:text-indigo-200">Python Lessons</a>
+                        <a href="{{ url_for('linux_lessons') }}" class="hover:text-indigo-200">Linux Commands</a>
+                        <a href="{{ url_for('profile') }}" class="hover:text-indigo-200">Profile</a>
+                        <a href="{{ url_for('logout') }}" class="hover:text-indigo-200">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="hover:text-indigo-200">Login</a>
+                        <a href="{{ url_for('register') }}" class="bg-white text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-8">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold">PythonMaster</h3>
+                    <p class="mt-2 text-gray-400">Learn Python and Linux commands interactively.</p>
+                </div>
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-12">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-2">Quick Links</h4>
+                        <ul class="space-y-2">
+                            <li><a href="{{ url_for('python_lessons') }}" class="text-gray-400 hover:text-white">Python Lessons</a></li>
+                            <li><a href="{{ url_for('linux_lessons') }}" class="text-gray-400 hover:text-white">Linux Commands</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; {{ now.year }} PythonMaster. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
